@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Cantus - Menu</title>
+  <style>
+    /* Reset */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; }
+
+    /* Menu principal fixo */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: #222;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+    }
+
+    /* Logo */
+    .logo {
+      color: #fff;
+      line-height: 1.2;
+      padding: 10px 0;
+    }
+
+    .logo .titulo {
+      font-size: 33.3px;
+      font-weight: bold;
+    }
+
+    .logo .subtitulo {
+      font-size: 14px;
+      font-weight: normal;
+      color: #ccc;
+    }
+
+    /* Botão mobile */
+    .menu-toggle {
+      display: none;
+      font-size: 26px;
+      color: #fff;
+      background: none;
+      border: none;
+      padding: 15px 20px;
+      cursor: pointer;
+    }
+
+    /* Lupa de pesquisa */
+    .search-toggle {
+      color: #fff;
+      font-size: 24px;
+      text-decoration: none;
+      cursor: pointer;
+      margin-left: 10px;
+    }
+    
+    .search-toggle svg {
+      width: 16px;
+      height: 16px;
+      fill: none;
+      stroke: currentColor;
+      vertical-align: middle;
+    }
+
+    /* Lista principal */
+    nav ul {
+      list-style: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #222;
+    }
+
+    nav ul li {
+      position: relative;
+    }
+
+    /* Links */
+    nav ul li a {
+      display: block;
+      padding: 15px 10px;
+      color: #fff;
+      text-decoration: none;
+      transition: background 0.3s;
+    }
+
+    nav ul li a:hover {
+      background: #444;
+    }
+
+    /* Dropdown de 1º nível */
+    nav ul li ul {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: #333;
+      min-width: 200px;
+      flex-direction: column;
+      /* Correção: Alinha o conteúdo à esquerda */
+      justify-content: flex-start;
+      align-items: flex-start;
+    }
+
+    nav ul li:hover > ul {
+      display: flex;
+    }
+
+    nav ul li ul li a {
+      padding: 10px 15px;
+      color: #fff;
+      /* Correção: Garante que o texto do link se alinhe à esquerda e ocupa a largura total */
+      text-align: left;
+      width: 100%;
+    }
+
+    nav ul li ul li a:hover {
+      background: #555;
+    }
+
+    /* Sub-dropdown (nível 2) */
+    nav ul li ul li ul {
+      left: 100%;
+      top: 0;
+      display: none;
+    }
+
+    nav ul li ul li:hover > ul {
+      display: flex;
+    }
+
+    /* Barra de pesquisa sobreposta */
+    .search-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 10000;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+    }
+
+    .search-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .search-overlay input[type="text"] {
+      width: 80%;
+      max-width: 500px;
+      padding: 15px;
+      font-size: 1.2rem;
+      border: 2px solid #fff;
+      background: transparent;
+      color: #fff;
+      outline: none;
+      border-radius: 5px;
+    }
+
+    .search-overlay input[type="text"]::placeholder {
+      color: #ccc;
+    }
+
+    .search-overlay .close-search {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      font-size: 40px;
+      color: #fff;
+      cursor: pointer;
+      border: none;
+      background: none;
+    }
+
+    /* Espaço para não cobrir o conteúdo */
+    main {
+      margin-top: 70px;
+      padding: 20px;
+    }
+
+    /* ---------------------------------------------------------------------
+       RODAPÉ
+       --------------------------------------------------------------------- */
+    footer {
+      background: #222;
+      color: #fff;
+      padding: 40px 20px 20px;
+      font-size: 14px;
+    }
+
+    .footer-container {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 30px;
+      margin-bottom: 20px;
+      align-items: start;
+    }
+
+    .footer-left .footer-section {
+      margin-bottom: 18px;
+    }
+
+    .footer-section h3 {
+      font-size: 16px;
+      margin-bottom: 10px;
+      color: #f0f0f0;
+    }
+
+    .footer-section p {
+      color: #ccc;
+      line-height: 1.6;
+    }
+
+    .footer-right {
+      /* Correção: Define a div como um flex container de coluna, alinhando tudo ao centro */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center; /* Mantido para garantir alinhamento em navegadores mais antigos */
+    }
+
+    /* Correção: Garante que a div dos ícones também seja um flexbox centralizado */
+    .social-icons {
+      margin-top: 10px;
+      display: flex;
+      justify-content: center;
+      gap: 15px; /* Novo: Use gap para espaçamento, eliminando a margem individual */
+    }
+
+    .social-icons a {
+      display: inline-block;
+      color: #fff;
+      transition: color 0.3s, transform 0.3s;
+      text-decoration: none;
+    }
+
+    .social-icons a svg {
+      width: 26px;
+      height: 26px;
+      display: block;
+      vertical-align: middle;
+    }
+    
+    /* Regras de hover para todos os ícones */
+    .social-icons a:hover {
+      transform: scale(1.1);
+    }
+    .social-icons a[aria-label="YouTube"]:hover {
+      color: #ff4444; /* Cor para o YouTube */
+    }
+    .social-icons a[aria-label="Instagram"]:hover {
+      color: #C13584; /* Cor corrigida para o Instagram */
+    }
+    .social-icons a[aria-label="GitHub"]:hover {
+      color: #007bff; /* Cor para o GitHub */
+    }
+
+    .copyright-container {
+      text-align: center;
+      border-top: 1px solid #444;
+      padding-top: 15px;
+      font-size: 13px;
+      color: #aaa;
+    }
+
+    /* Responsivo */
+    @media (max-width: 768px) {
+      nav {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+      }
+      nav ul {
+        flex-direction: column;
+        display: none;
+        width: 100%;
+      }
+      nav ul li {
+        width: 100%;
+      }
+      nav ul li ul {
+        position: static;
+        /* Correção para responsividade: garante o alinhamento à esquerda no mobile */
+        align-items: flex-start;
+      }
+      nav ul li ul li ul {
+        position: static;
+      }
+      .menu-toggle {
+        display: block;
+      }
+      nav ul.show {
+        display: flex;
+      }
+
+      /* Ajustes da lupa no mobile */
+      nav ul .search-container {
+        display: block;
+      }
+      .search-toggle {
+        display: none;
+      }
+      
+      .footer-container {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+      .footer-right {
+        margin-top: 20px;
+        text-align: center;
+      }
+      .social-icons {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+      }
+      .social-icons a {
+        margin-right: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="search-overlay">
+    <button class="close-search">×</button>
+    <input type="text" placeholder="Buscar...">
+  </div>
+
+  <nav>
+    <div class="logo">
+      <div class="titulo">Cantus</div>
+      <div class="subtitulo">Música Litúrgica</div>
+    </div>
+    <button class="menu-toggle" onclick="document.querySelector('nav ul').classList.toggle('show')">
+      ☰
+    </button>
+    <ul>
+      <li><a href="#">Próprio do Tempo</a>
+        <ul>
+          <li><a href="#">Advento</a></li>
+          <li><a href="#">Natal</a></li>
+          <li><a href="#">Quaresma</a></li>
+          <li><a href="#">Semana Santa</a></li>
+          <li><a href="#">Páscoa</a></li>
+          <li><a href="#">Tempo Comum</a></li>
+          <li><a href="#">Solenidades do Senhor</a></li>
+        </ul>
+      </li>
+
+      <li><a href="#">Missas</a>
+        <ul>
+          <li><a href="#">Missas Rituais</a></li>
+          <li><a href="#">Missas Diversas</a></li>
+          <li><a href="#">Missas Votivas</a></li>
+          <li><a href="#">Missas Pelos Defuntos</a></li>
+        </ul>
+      </li>
+
+      <li><a href="#">Comuns</a></li>
+
+      <li><a href="#">Próprio dos Santos</a>
+        <ul>
+          <li><a href="#">Janeiro</a></li>
+          <li><a href="#">Fevereiro</a></li>
+          <li><a href="#">Março</a></li>
+          <li><a href="#">Abril</a></li>
+          <li><a href="#">Maio</a></li>
+          <li><a href="#">Junho</a></li>
+          <li><a href="#">Julho</a></li>
+          <li><a href="#">Agosto</a></li>
+          <li><a href="#">Setembro</a></li>
+          <li><a href="#">Outubro</a></li>
+          <li><a href="#">Novembro</a></li>
+          <li><a href="#">Dezembro</a></li>
+        </ul>
+      </li>
+
+      <li><a href="#">Ordinário da Missa</a>
+        <ul>
+          <li><a href="#">Ato Penitencial</a></li>
+          <li><a href="#">Kýrie, Eléison</a></li>
+          <li><a href="#">Glória a Deus nas alturas</a></li>
+          <li><a href="#">Santo</a></li>
+          <li><a href="#">Cordeiro de Deus</a></li>
+          <li><a href="#">Outros</a>
+            <ul>
+              <li><a href="#">Aspersão</a></li>
+              <li><a href="#">Creio</a></li>
+              <li><a href="#">Pai Nosso</a></li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li><a href="#">Complemento</a>
+        <ul>
+          <li><a href="#">Comunhão Ad Libitum</a></li>
+          <li><a href="#">Kyriale</a></li>
+          <li><a href="#">Tons Comuns</a></li>
+          <li><a href="#">Modos do Aleluia</a></li>
+          <li><a href="#">Modos Gregorianos</a></li>
+        </ul>
+      </li>
+
+      <li><a href="#">Downloads</a></li>
+      <li>
+        <a href="#" class="search-toggle" aria-label="Abrir pesquisa">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M11.5 21a9.5 9.5 0 1 0 0-19 9.5 9.5 0 0 0 0 19ZM22 22l-2-2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <main>
+    <h1>Bem-vindo ao Cantus</h1>
+    <p>Disponibilizando materiais indispensáveis para o músico litúrgico </p>
+  </main>
+
+  <footer>
+    <div class="footer-container">
+      <div class="footer-left">
+        <div class="footer-section">
+          <h3>Sobre nós</h3>
+          <p>
+            O <strong>Cantus</strong> tem como missão fornecer materiais indispensáveis
+            <br>para auxiliar no serviço
+            <i>litúrgico-musical</i> de sua paróquia ou comunidade.
+          </p>
+        </div>
+
+        <div class="footer-section">
+          <h3>Correções e sugestões</h3>
+          <p>Email: <a href="mailto:contato@cantus.com.br" style="color:inherit;text-decoration:underline;">lucasmeraki@yandex.com</a></p>
+          <p>WhatsApp: <a href="mailto:suporte@cantus.com.br" style="color:inherit;text-decoration:underline;">+55 71 9 8205-5564</a></p>
+        </div>
+      </div>
+
+      <div class="footer-right">
+        <h3>Siga-me</h3>
+        <div class="social-icons">
+          <a href="https://youtube.com/@lucasmeraki?si=J6zbyw-6VYTNJ1lk" target="_blank" aria-label="YouTube" title="YouTube">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" fill="currentColor" aria-hidden="true">
+              <path d="M549.655 124.083c-6.281-23.72-24.854-42.293-48.575-48.574C458.123 64 288 64 288 64s-170.123 0-213.08 11.509c-23.72 6.281-42.294 24.854-48.575 48.574C16.761 166.04 16.761 256 16.761 256s0 89.96 9.584 131.917c6.281 23.72 24.854 42.294 48.575 48.575C117.877 448 288 448 288 448s170.123 0 213.08-11.509c23.72-6.281 42.294-24.854 48.575-48.575 9.584-41.957 9.584-131.917 9.584-131.917s0-89.96-9.584-131.917zM232 334V178l142 78-142 78z"/>
+            </svg>
+          </a>
+
+          <a href="https://instagram.com/Lucas.meraki" target="_blank" aria-label="Instagram">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5a4.25 4.25 0 0 0 4.25-4.25v-8.5A4.25 4.25 0 0 0 16.25 3.5h-8.5zM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 1.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zm5.75-2a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5z"/>
+            </svg>
+          </a>
+
+          <a href="#" target="_blank" aria-label="GitHub" title="GitHub">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" width="26" height="26">
+              <path d="M12 .297C5.373.297 0 5.67 0 12.297c0 5.303 3.438 9.8 8.205 11.387.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.725-4.042-1.61-4.042-1.61-.546-1.387-1.333-1.757-1.333-1.757-1.09-.744.083-.729.083-.729 1.205.084 1.84 1.236 1.84 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.418-1.305.762-1.605-2.665-.305-5.466-1.332-5.466-5.931 0-1.309.469-2.381 1.236-3.221-.124-.303-.536-1.524.117-3.176 0 0 1.008-.322 3.301 1.23a11.49 11.49 0 013.003-.404c1.018.005 2.045.138 3.003.404 2.291-1.552 3.297-1.23 3.297-1.23.655 1.653.243 2.874.119 3.176.77.84 1.235 1.912 1.235 3.221 0 4.61-2.804 5.624-5.475 5.92.43.37.823 1.102.823 2.222 0 1.606-.015 2.896-.015 3.286 0 .319.216.694.825.576C20.565 22.092 24 17.592 24 12.297 24 5.67 18.627.297 12 .297z"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="copyright-container">
+      <p>
+        &copy; <span id="current-year">2025</span> Cantus • Música Litúrgica - Desenvolvido por Lucas Meraki
+      </p>
+    </div>
+  </footer>
+
+  <script>
+    // Atualiza o ano no copyright
+    const currentYear = new Date().getFullYear();
+    const yearEl = document.getElementById('current-year');
+    if (yearEl) yearEl.textContent = currentYear;
+
+    // Lógica para a barra de pesquisa
+    const searchToggle = document.querySelector('.search-toggle');
+    const searchOverlay = document.querySelector('.search-overlay');
+    const closeSearch = document.querySelector('.close-search');
+
+    searchToggle.addEventListener('click', (event) => {
+      event.preventDefault();
+      searchOverlay.classList.add('active');
+    });
+
+    closeSearch.addEventListener('click', () => {
+      searchOverlay.classList.remove('active');
+    });
+  </script>
+
+</body>
+</html>
